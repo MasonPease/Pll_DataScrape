@@ -33,7 +33,9 @@ def get_stats(team,year,player_stats):
                     'goals' : goals,
                     'assists' : assists,
                     'shots' : shots,
-                    'SOG' : sog
+                    'SOG' : sog, 
+                    'Team' : team, 
+                    'Year' : year
                 }
                 player_stats.append(player)
     else:
@@ -50,7 +52,7 @@ def main():
             get_stats(team, year,player_stats)
 
     df = pd.DataFrame(player_stats)
-    print(df)
+    df.to_excel('player_stats.xlsx', index = False)
 
 if __name__ == '__main__':
     main()
