@@ -1,0 +1,60 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+
+
+
+
+def get_stats(team,year,player_stats):
+
+    url = f'https://www.statscrew.com/lacrosse/stats/t-{team}/y-{year}'
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    r=requests.get(url, headers=headers)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    tbody = soup.find('tbody')
+    if tbody:
+        for row in tbody.find_all('tr'):
+            cells = row.find_all('td')
+            if len(cells) >=6:
+                name = cells[0].text.strip()
+                position = cells[1].text.strip()
+                goals = cells[3].text.strip()
+                assists = cells[4].text.strip()
+                shots = cells[10].text.strip()
+                sog = cells[11].text.strip()
+                player = {
+                    'name' : name,
+                    'position' : position,
+                    'goals' : goals,
+                    'assists' : assists,
+                    'shots' : shots,
+                    'SOG' : sog
+                }
+                player_stats.append(player)
+    else:
+        print('no tbody found')
+    return player_stats
+
+def main():
+    teams = {'PLLARC','PLLATL', 'PLLCAN', 'PLLCHA', 'PLLCHR', 'PLLRED', 'PLLWAT','PLLWHI'}
+    years = {'2019', '2020', '2021','2022','2023'}
+    player_stats = []
+
+    for team in teams: 
+        for year in years:
+            get_stats(team, year,player_stats)
+
+    df = pd.DataFrame(player_stats)
+    print(df)
+
+if __name__ == '__main__':
+    main()
+
+
+
+
